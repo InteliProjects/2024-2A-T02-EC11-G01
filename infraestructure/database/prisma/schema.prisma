@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model locations {
+  location_id  String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  latitude String
+  longitude String
+  predictions  predictions[]
+  created_at   DateTime      @default(dbgenerated("now()"))
+  updated_at   DateTime      @default(dbgenerated("now()"))
+}
+
+model predictions {
+  prediction_id     String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  raw_image_path    String
+  annotated_image_path String?
+  detections            BigInt?
+  location_id       String    @db.Uuid
+  locations         locations @relation(fields: [location_id], references: [location_id])
+  created_at        DateTime  @default(dbgenerated("now()"))
+  updated_at        DateTime  @default(dbgenerated("now()"))
+}
